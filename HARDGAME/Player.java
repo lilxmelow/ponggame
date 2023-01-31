@@ -3,19 +3,19 @@ package HARDGAME;
 
 
 public class Player{
+//variables
 
-
-
+//size of the paddle
 private final int WIDTH = 5;
 private final int HEIGHT = 50;
 
-
+//location of the player
 private int pos_x, pos_y;
 
-
+//speed of the player
 private int speed;
 
-
+//constructor
 public Player(int pos_x, int pos_y, int s){
 	this.pos_x = pos_x;
 	this.pos_y = pos_y;
@@ -50,4 +50,5 @@ public void setSpeed(int s){
 	speed = s;
 }
 }
+
 
