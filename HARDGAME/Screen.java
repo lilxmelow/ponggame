@@ -12,43 +12,50 @@ import javax.swing.JPanel;
 
 
 public class Screen extends JPanel implements Runnable, KeyListener{
-
+//variables
+//player 1 information
 private Player p1;
 private boolean p1_up = false;
 private boolean p1_down = false;
 
-
+//player 2 information
 private Player p2;
 private boolean p2_up = false;
 private boolean p2_down = false;
 
-
+//ball information
 private Ball b;
 private boolean b_right = true;
 private boolean b_up = true;
 
-
+//scoreboard information
 private ScoreBoard score;
 
-
+//other info
 private Thread thread;
 
-
+//constructor
 public Screen(Player player_1, Player player_2, Ball ball, ScoreBoard board){
-	
+	//set player 1 information
 	p1 = player_1;
 	
+	//set player 2 information
 	p2 = player_2;
 	
-	
+	//set ball information
 	b = ball;
 	
-	
+	//set scoreboard information
 	score = board;
 	
-	
+	//Screen details
 	this.setFocusable(true);
+	requestFocusInWindow() ;
+	
 	this.addKeyListener(this);
+	
+	
+	
 	
 	this.add(board);
 	
@@ -61,7 +68,7 @@ public void paintComponent(Graphics g){
 	super.paintComponent(g);
 	Graphics2D g2 = (Graphics2D)g;
 	
-
+	//draw player blocks
 	g2.setColor(Color.BLACK);
 	g2.fillRect(p1.getX(), p1.getY(), p1.getWidth(), p1.getHeight());
 	
@@ -76,7 +83,7 @@ public void paintComponent(Graphics g){
 public void run() {
 	// TODO Auto-generated method stub
 	
-	
+	//sleep the thread so the game doesn't start too early
 	try{
 		Thread.sleep(1000);
 	}
@@ -84,9 +91,9 @@ public void run() {
 		
 	}
 	
-	
+	//run the game loop
 	while(true){
-		
+		//allows for smooth motion of the game
 		try{
 			Thread.sleep(10);
 		}
@@ -100,6 +107,7 @@ public void run() {
 }
 
 public void movePlayer(int p){
+	
 	if(p == 1){
 		if(p1_up && p1.getY() > 0){
 			p1.setY(p1.getY() - p1.getSpeed());
@@ -120,19 +128,19 @@ public void movePlayer(int p){
 }
 
 public void moveBall(){
-	
-	if(b_right && hitPaddle(true)){ 
+	//x-direction motion
+	if(b_right && hitPaddle(true)){ //hits the right paddle
 		b.setX(b.getX() - b.getSpeed());
 		b_right = false;
 	}
-	else if(b_right && b.getX() < (this.getWidth() - b.getWidth())){ 
+	else if(b_right && b.getX() < (this.getWidth() - b.getWidth())){ //if moving right and not at max
 		b.setX(b.getX() + b.getSpeed());
 	}
-	else if(b_right && b.getX() >= (this.getWidth() - b.getWidth())){ 
+	else if(b_right && b.getX() >= (this.getWidth() - b.getWidth())){ //if moving right, but at max (point for p2)
 		b.setOriginalPos();
 		b_right = false;
 		score.pointP2();
-		
+		//cause a pause before the game resumes
 		try{
 			Thread.sleep(500);
 		}
@@ -141,18 +149,18 @@ public void moveBall(){
 		}
 	}
 	
-	else if(!b_right && hitPaddle(false)){ 
+	else if(!b_right && hitPaddle(false)){ //hits the left paddle
 		b.setX(b.getX() + b.getSpeed());
 		b_right = true;
 	}
-	else if(!b_right && b.getX() > 0){ 
+	else if(!b_right && b.getX() > 0){ //if moving left, but not at max
 		b.setX(b.getX() - b.getSpeed());
 	}
-	else if(!b_right && b.getX() <= 0){ 
+	else if(!b_right && b.getX() <= 0){ //if moving left, but at max (point p1)
 		b.setOriginalPos();
 		b_right = true;
 		score.pointP1();
-		
+		//cause a pause before the game resumes
 		try{
 			Thread.sleep(500);
 		}
@@ -161,23 +169,24 @@ public void moveBall(){
 		}
 	}
 	
-	
-	if(b_up && b.getY() > 0){ 
+	//y-direction motion
+	if(b_up && b.getY() > 0){ //if moving up and not at max
 		b.setY(b.getY() - b.getSpeed());
 	}
-	else if(b_up && b.getY() <= 0){ 
+	else if(b_up && b.getY() <= 0){ //if moving up, but at max
 		b.setY(b.getY() + b.getSpeed());
 		b_up = false;
 	}
-	else if(!b_up && b.getY() < (this.getHeight() - b.getHeight())){ 
+	else if(!b_up && b.getY() < (this.getHeight() - b.getHeight())){ //if moving down, but not at max
 		b.setY(b.getY() + b.getSpeed());
 	}
-	else if(!b_up && b.getY() >= (this.getHeight() - b.getHeight())){ 
+	else if(!b_up && b.getY() >= (this.getHeight() - b.getHeight())){ //if moving down, but at max
 		b.setY(b.getY() - b.getSpeed());
 		b_up = true;
 	}
 }
 
+//method to determine if the ball hits the paddle
 public boolean hitPaddle(boolean is_right_dir){
 	if(is_right_dir){
 		if(b.getX() >= p1.getX() && b.getX() < (p1.getX() + p1.getWidth()) && b.getY() >= p1.getY() && b.getY() <= p1.getY() + p1.getHeight()){
@@ -200,19 +209,20 @@ public boolean hitPaddle(boolean is_right_dir){
 @Override
 public void keyPressed(KeyEvent evt) {
 	// TODO Auto-generated method stub
-	if(evt.getKeyCode() == 38){ 
+	
+	if(evt.getKeyCode() == 38){ //if player 1 is moving up
 		p1_down = false;
 		p1_up = true;
 	}
-	else if(evt.getKeyCode() == 40){ 
+	else if(evt.getKeyCode() == 40){ //if player 1 is moving down
 		p1_down = true;
 		p1_up = false;
 	}
-	else if(evt.getKeyCode() == 65){ 
+	else if(evt.getKeyCode() == 65){ //if player 2 is moving up
 		p2_down = false;
 		p2_up = true;
 	}
-	else if(evt.getKeyCode() == 90){ 
+	else if(evt.getKeyCode() == 90){ //if player 2 is moving down
 		p2_down = true;
 		p2_up = false;
 	}
@@ -221,13 +231,14 @@ public void keyPressed(KeyEvent evt) {
 @Override
 public void keyReleased(KeyEvent evt) {
 	// TODO Auto-generated method stub
-	if(evt.getKeyCode() == 38){ 
+	
+	if(evt.getKeyCode() == 38){ //if player 1 stops moving up
 		p1_up = false;
 	}
 	else if(evt.getKeyCode() == 40){
 		p1_down = false;
 	}
-	else if(evt.getKeyCode() == 65){ 
+	else if(evt.getKeyCode() == 65){ //if player 2 stops moving up
 		p2_up = false;
 	}
 	else if(evt.getKeyCode() == 90){
@@ -241,4 +252,3 @@ public void keyTyped(KeyEvent evt) {
 	
 }
 }
-
